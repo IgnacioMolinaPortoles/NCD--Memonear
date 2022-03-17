@@ -15,7 +15,7 @@ yarn build
 
 near dev-deploy ./build/debug/singleton.wasm
 
-# Copy the contract name and export it like this
+# Copy the contract dev name and export it like this
 
 export CONTRACT=<dev-123-456>
 ```
