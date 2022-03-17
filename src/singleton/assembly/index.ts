@@ -1,68 +1,130 @@
-import { storage, Context } from "near-sdk-core"
+import { games, Memonear, State } from "./models";
+import { context, ContractPromiseBatch, logging, u128 } from "near-sdk-as";
+import { ONE_NEAR } from "../../utils";
 
 @nearBindgen
 export class Contract {
-  private message: string = 'hello world'
+  private owner: string = "";
 
-  // return the string 'hello world'
-  helloWorld(): string {
-    return this.message
+  constructor(owner: string) {
+    this.owner = owner
   }
 
-  // read the given key from account (contract) storage
-  read(key: string): string {
-    if (isKeyInStorage(key)) {
-      return `✅ Key [ ${key} ] has value [ ${storage.getString(key)!} ] and "this.message" is [ ${this.message} ]`
-    } else {
-      return `🚫 Key [ ${key} ] not found in storage. ( ${this.storageReport()} )`
-    }
-  }
-
-  /**
-  write the given value at the given key to account (contract) storage
-  ---
-  note: this is what account storage will look like AFTER the write() method is called the first time
-  ╔════════════════════════════════╤══════════════════════════════════════════════════════════════════════════════════╗
-  ║                            key │ value                                                                            ║
-  ╟────────────────────────────────┼──────────────────────────────────────────────────────────────────────────────────╢
-  ║                          STATE │ {                                                                                ║
-  ║                                │   "message": "data was saved"                                                    ║
-  ║                                │ }                                                                                ║
-  ╟────────────────────────────────┼──────────────────────────────────────────────────────────────────────────────────╢
-  ║                       some-key │ some value                                                                       ║
-  ╚════════════════════════════════╧══════════════════════════════════════════════════════════════════════════════════╝
-   */
   @mutateState()
-  write(key: string, value: string): string {
-    storage.set(key, value)
-    this.message = 'data was saved' // this is why we need the deorator @mutateState() above the method name
-    return `✅ Data saved. ( ${this.storageReport()} )`
+  setOwner(owner: string): string {
+    assert(this.owner.length === 0, "Owner already setup")
+    this.owner = owner
+    return `Owner set to ${owner} succesfully!`
   }
 
-
-  // private helper method used by read() and write() above
-  private storageReport(): string {
-    return `storage [ ${Context.storageUsage} bytes ]`
+  @mutateState()
+  changeOwner(newOwner: string): string {
+    assert(context.sender != this.owner, "Only owner can change owner")
+    this.owner = newOwner
+    return `New owner is ${newOwner}`
   }
-}
 
-/**
- * This function exists only to avoid a compiler error
- *
+  contractStatus(): string {
+    return `Owner: ${this.owner}`;
+  }
 
-ERROR TS2339: Property 'contains' does not exist on type 'src/singleton/assembly/index/Contract'.
+  createGame(): u32 {
+    assert(
+      context.attachedDeposit == ONE_NEAR,
+      "You need to send only 1 near token"
+    );
+    const game = new Memonear();
+    games.set(game.gameId, game);
+    game.gameDeposit = context.attachedDeposit;
 
-     return this.contains(key);
-                 ~~~~~~~~
- in ~lib/near-sdk-core/storage.ts(119,17)
+    return game.gameId;
+  }
 
-/Users/sherif/Documents/code/near/_projects/edu.t3/starter--near-sdk-as/node_modules/asbuild/dist/main.js:6
-        throw err;
-        ^
+  getGameInfo(gameId: u32): Memonear {
+    assert(context.sender == this.owner, "Only owner can call this function");
+    let game = games.getSome(gameId);
+    return game;
+  }
 
- * @param key string key in account storage
- * @returns boolean indicating whether key exists
- */
-function isKeyInStorage(key: string): bool {
-  return storage.hasKey(key)
+  showBoard(gameId: u32): Array<string[]> {
+    assert(context.sender == this.owner, "Only owner can call this function");
+    let game = games.getSome(gameId);
+    return game.gameBoard;
+  }
+
+  checkCombination(gameId: u32, x1: u32, y1: u32, x2: u32, y2: u32): string {
+    let game = games.getSome(gameId);
+
+    let firstItem: string = game.gameBoard[x1][y1];
+    let secondItem: string = game.gameBoard[x2][y2];
+    game.userPlays += 1;
+
+    if (firstItem == secondItem) {
+      game.matchCount += 1;
+      game.gameBoard[x1][y1] = "winned.png";
+      game.gameBoard[x2][y2] = "winned.png";
+
+      if (game.matchCount == 6) {
+        return this.endGame(game, game.userPlays <= 8);
+      }
+
+      games.set(gameId, game);
+      return "Its a match";
+    }
+    games.set(gameId, game);
+
+    return "Sorry, try again";
+  }
+
+  mockGame(gameId: u32, userPlays: u32): void {
+    assert(context.sender == this.owner, "Only owner can call this function");
+    let game = games.getSome(gameId);
+
+    game.gameBoard = [
+      ["slime_pink.png", "slime_pink.png", "winned.png", "winned.png"],
+      ["winned.png", "winned.png", "winned.png", "winned.png"],
+      ["winned.png", "winned.png", "winned.png", "winned.png"],
+    ];
+
+    game.matchCount = 5;
+    game.userPlays = userPlays;
+
+    games.set(gameId, game);
+  }
+
+  endGame(game: Memonear, returnAll: bool): string {
+    game.gameState = State.Finished;
+    const payablePromise = ContractPromiseBatch.create(game.player);
+    let winnerTokens: u128 = game.gameDeposit;
+
+    if (!returnAll) {
+      winnerTokens = u128.div(game.gameDeposit, u128.from("2"));
+    }
+
+    payablePromise.transfer(winnerTokens);
+
+    games.set(game.gameId, game);
+    return `Player ${game.player} won! and has received ${winnerTokens} tokens!`;
+  }
+
+  printBoard(gameId: u32): string {
+    let game = games.getSome(gameId);
+
+    var parsedBoard = "";
+
+    for (let i = 0; i < game.gameBoard.length; i++) {
+      for (let j = 0; j < game.gameBoard[i].length; j++) {
+        if (game.gameBoard[i][j] == "winned.png") {
+          parsedBoard = parsedBoard.concat(game.gameBoard[i][j] + " | ");
+        } else {
+          parsedBoard = parsedBoard.concat("hidden.png | ");
+        }
+        
+      }
+      parsedBoard = parsedBoard.concat("\n");
+
+    }
+
+    return parsedBoard;
+  }
 }
