@@ -15,9 +15,7 @@ yarn build
 
 near dev-deploy ./build/debug/singleton.wasm
 
-# Copy the contract dev name and export it like this
-
-export CONTRACT=<dev-123-456>
+# Save the contract dev name (<dev-123-456>)
 ```
 
 ## Guide
@@ -34,26 +32,26 @@ export CONTRACT=<dev-123-456>
 ```
 # Save the game id to play
 
-near call <contract-id> createGame --account_id <account-id> --amount 1
+near call <dev-123-456> createGame --account_id <account-id> --amount 1
 ```
 
 **View board for the first time**
 ```
-near call <contract-id> printBoard '{"gameId": <game-id>}' --account_id <account-id>
+near call <dev-123-456> printBoard '{"gameId": <game-id>}' --account_id <account-id>
 ```
 
 **Start matching items**
 ```
-near call <contract-id> checkCombination '{"gameId": <game-id>, "x1": <x-first-item>, "y1":<y-first-item>, "x2":<x-second-item>, "y2":<y-second-item>}' --accountId <account-id>
+near call <dev-123-456> checkCombination '{"gameId": <game-id>, "x1": <x-first-item>, "y1":<y-first-item>, "x2":<x-second-item>, "y2":<y-second-item>}' --accountId <account-id>
 ```
 
 ## Owner functions
 
 **Get game info (playerId, Game state, Game deposit, Game board, Match count and User tries)**
 ```
-near call <contract-id> getGameInfo '{"gameId": <game-id>}' --account_id <account-id>
+near call <dev-123-456> getGameInfo '{"gameId": <game-id>}' --account_id <account-id>
 ```
 **Hardcode game board to have only 2 items left to match**
 ```
-near call <contract-id> mockGame '{"gameId": <game-id>, "userPlays": <amount-of-tries>}' --account_id <account-id>
+near call <dev-123-456> mockGame '{"gameId": <game-id>, "userPlays": <amount-of-tries>}' --account_id <account-id>
 ```
