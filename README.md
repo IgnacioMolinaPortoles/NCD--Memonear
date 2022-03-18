@@ -1,6 +1,6 @@
 # NCD Project Memonear 
 
-🎬 [Video demo](https://drive.google.com/file/d/1L0licLk5sSTQ21iwIp3QHHPRhX8hhfC3/view)
+🎬 [Loom demo](https://www.loom.com/share/6f72b278a5fa4dbe8ba460a530bb06a7)
 
 🎨 [Figma design](https://www.figma.com/file/CysKjUzYeDr2qUTBw5UohU/Memonear?node-id=0%3A1)
 
