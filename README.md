@@ -1,8 +1,8 @@
 # NCD Project Memonear 
 
-[Video demo](https://drive.google.com/file/d/1L0licLk5sSTQ21iwIp3QHHPRhX8hhfC3/view)
+🎬[Video demo](https://drive.google.com/file/d/1L0licLk5sSTQ21iwIp3QHHPRhX8hhfC3/view)
 
-[Figma design](https://www.figma.com/file/CysKjUzYeDr2qUTBw5UohU/Memonear?node-id=0%3A1)
+🎨[Figma design](https://www.figma.com/file/CysKjUzYeDr2qUTBw5UohU/Memonear?node-id=0%3A1)
 
 ## Install dependencies
 ```
