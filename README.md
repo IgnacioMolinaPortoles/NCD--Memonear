@@ -2,7 +2,7 @@
 
 Video demo: [here](https://drive.google.com/file/d/1L0licLk5sSTQ21iwIp3QHHPRhX8hhfC3/view)
 
-Figma wireframes: [here](https://www.figma.com/file/reMNlA1lKaM1hFthWbwvrP/Untitled?node-id=3%3A117)
+Figma design: [here](https://www.figma.com/file/CysKjUzYeDr2qUTBw5UohU/Memonear?node-id=0%3A1)
 
 ## Install dependencies
 ```
