@@ -24,8 +24,8 @@ near dev-deploy ./build/debug/singleton.wasm
 2. Player can start playing by checking different combinations, sending the position (x, y) to `checkCombination` of the 2 items to match
 5. The player need to match all 6 items to win
 4. The player can view the board at any moment by using `printBoard(gameId)` 
-6. If some player doesnt want to play anymore, the owner can call `mockGame` and finish the game
-7. When 6 items are matched, the attached deposit when the game was created will be transfered to the wallet of the winner if the player complete the game in less than 8 plays, otherwise it will receive 0.5 near tokens.
+6. If some player doesn't want to play anymore, the owner can call `mockGame` and finish the game
+7. When 6 items are matched, the attached deposit when the game was created will be transferred to the wallet of the winner if the player completes the game in less than 8 plays, otherwise it will receive 0.5 near tokens.
 
 ## Run the game
 **Create a game**
