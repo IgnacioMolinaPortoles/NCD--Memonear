@@ -21,7 +21,7 @@ near dev-deploy ./build/debug/singleton.wasm
 ## Guide
 
 1. You need to create a new game with `createGame` function and send 1 near tokens
-2. Player can start playing by checking different combinations, sending the position (x, y) to `checkCombination` of the 2 items to match
+2. Player can start playing by checking different combinations, sending the position (x, y) to `checkCombination` of the 2 items to match. To add some difficulty to the game, when 2 items don't match, it won't tell you what items they are.
 5. The player need to match all 6 items to win
 4. The player can view the board at any moment by using `printBoard(gameId)` 
 6. If some player doesn't want to play anymore, the owner can call `mockGame` and finish the game
